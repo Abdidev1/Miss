@@ -1,14 +1,15 @@
 /* --- Global & Theme Setup --- */
 :root {
-    --space-dark: #0f0a1c;
-    --star-light: #e0f7fa;
-    --nebula-purple: #8e24aa;
-    --nebula-blue: #03a9f4;
+    --space-dark: #070211;
+    --star-light: #f4f8ff;
+    --nebula-purple: #9c27b0;
+    --nebula-blue: #00bcd4;
+    --glass-background: rgba(255, 255, 255, 0.05);
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif; 
     color: var(--star-light);
     background-color: var(--space-dark);
     text-align: center;
@@ -17,91 +18,178 @@ body {
     flex-direction: column;
 }
 
-/* --- Cosmic Background Effect (Simplified) --- */
+/* --- Cosmic Background Effect (Animated) --- */
+@keyframes nebula-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 #star-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* Simple gradient to mimic a nebula */
-    background: radial-gradient(circle at top left, var(--nebula-purple) 0%, transparent 25%),
-                radial-gradient(circle at bottom right, var(--nebula-blue) 0%, transparent 25%);
-    opacity: 0.3;
-    z-index: -1;
+    background: linear-gradient(-45deg, var(--nebula-purple), var(--space-dark), var(--nebula-blue));
+    background-size: 400% 400%; 
+    animation: nebula-shift 20s ease infinite; 
+    opacity: 0.6;
+    z-index: -2; 
 }
 
-/* --- Header & Typography --- */
+/* --- Header & Glowing Text --- */
 header {
-    padding: 40px 20px;
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    padding: 60px 20px 20px;
+    margin-bottom: 20px;
 }
 
 h1 {
-    font-size: 3em;
-    /* Text Shadow for a subtle glow */
+    font-size: 4em;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
     text-shadow: 0 0 10px var(--nebula-blue), 0 0 20px var(--nebula-purple);
+    animation: text-pulse 3s infinite alternate;
 }
 
+@keyframes text-pulse {
+    0% { text-shadow: 0 0 5px var(--nebula-blue); }
+    100% { text-shadow: 0 0 15px var(--nebula-purple), 0 0 25px var(--nebula-blue); }
+}
+
+/* --- Content Container (Glassmorphism Effect) --- */
 .container {
     flex-grow: 1;
-    padding: 20px;
-    max-width: 900px;
-    margin: 20px auto;
-    background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent panel */
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(142, 36, 170, 0.5); /* Glowing box shadow */
+    padding: 30px;
+    max-width: 800px;
+    margin: 30px auto;
+    
+    /* GLASSMORPHISM PROPERTIES */
+    background: var(--glass-background); 
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); 
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 20px;
 }
 
-/* --- The Miss You Button (Key Feature Style) --- */
+h2 {
+    color: var(--nebula-blue);
+    margin-top: 0;
+}
+
+/* --- The Miss You Button (Pulsing Glow) --- */
 #miss-you-section {
     margin-top: 50px;
     padding: 30px;
-    border: 2px solid var(--nebula-purple);
-    border-radius: 10px;
-    background: rgba(15, 10, 28, 0.7);
+    border-radius: 15px;
+    background: rgba(15, 10, 28, 0.8);
 }
 
 .glow-on-hover {
-    width: 250px;
-    height: 50px;
+    width: 280px;
+    height: 60px;
     border: none;
     outline: none;
     color: var(--star-light);
     background: var(--nebula-purple);
     cursor: pointer;
     position: relative;
-    z-index: 0;
-    border-radius: 10px;
-    font-size: 1.1em;
+    z-index: 1;
+    border-radius: 30px; 
+    font-size: 1.2em;
+    font-weight: bold;
     transition: all 0.3s ease;
+    box-shadow: 0 0 10px var(--nebula-purple);
 }
 
-.glow-on-hover:hover {
-    background: var(--nebula-blue);
-    box-shadow: 0 0 20px var(--nebula-blue);
-    transform: scale(1.05);
+/* Outer glowing effect for the button */
+.glow-on-hover:before {
+    content: '';
+    background: linear-gradient(
+        45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000
+    );
+    position: absolute;
+    top: -2px; left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px); height: calc(100% + 4px);
+    animation: glowing-button 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 30px;
+}
+.glow-on-hover:hover:before { opacity: 1; }
+
+.glow-on-hover:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--space-dark);
+    left: 0;
+    top: 0;
+    border-radius: 30px;
 }
 
-/* --- Status Message --- */
+@keyframes glowing-button {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+
+/* --- Status Message (Confirmation) --- */
 #statusMessage {
     margin-top: 20px;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    padding: 15px;
+    background-color: var(--nebula-blue);
+    color: var(--space-dark);
+    border-radius: 8px;
     font-weight: bold;
-    color: limegreen; /* Green for success/notification */
+    box-shadow: 0 0 10px var(--nebula-blue);
 }
 
 .hidden {
     display: none;
 }
 
+/* --- Real-Time Flash Notification (for the other user) --- */
+#flash-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 255, 0.9); /* Bright Pink/Magenta Flash */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: flash-pulse 0.2s 10 alternate; /* Quick, attention-grabbing flash */
+}
+
+#flash-alert h1 {
+    font-size: 5em;
+    color: white;
+    text-shadow: 0 0 15px white, 0 0 30px black;
+    animation: text-shimmer 1s infinite alternate;
+}
+
+@keyframes flash-pulse {
+    from { opacity: 0.8; }
+    to { opacity: 1.0; }
+}
+@keyframes text-shimmer {
+    from { color: white; }
+    to { color: yellow; }
+}
+
 /* --- Footer --- */
 footer {
-    margin-top: auto;
-    padding: 15px;
-    font-size: 0.8em;
-    color: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 40px;
 }
