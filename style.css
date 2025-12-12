@@ -1,0 +1,107 @@
+/* --- Global & Theme Setup --- */
+:root {
+    --space-dark: #0f0a1c;
+    --star-light: #e0f7fa;
+    --nebula-purple: #8e24aa;
+    --nebula-blue: #03a9f4;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--star-light);
+    background-color: var(--space-dark);
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Cosmic Background Effect (Simplified) --- */
+#star-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Simple gradient to mimic a nebula */
+    background: radial-gradient(circle at top left, var(--nebula-purple) 0%, transparent 25%),
+                radial-gradient(circle at bottom right, var(--nebula-blue) 0%, transparent 25%);
+    opacity: 0.3;
+    z-index: -1;
+}
+
+/* --- Header & Typography --- */
+header {
+    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    font-size: 3em;
+    /* Text Shadow for a subtle glow */
+    text-shadow: 0 0 10px var(--nebula-blue), 0 0 20px var(--nebula-purple);
+}
+
+.container {
+    flex-grow: 1;
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent panel */
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(142, 36, 170, 0.5); /* Glowing box shadow */
+}
+
+/* --- The Miss You Button (Key Feature Style) --- */
+#miss-you-section {
+    margin-top: 50px;
+    padding: 30px;
+    border: 2px solid var(--nebula-purple);
+    border-radius: 10px;
+    background: rgba(15, 10, 28, 0.7);
+}
+
+.glow-on-hover {
+    width: 250px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: var(--star-light);
+    background: var(--nebula-purple);
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.glow-on-hover:hover {
+    background: var(--nebula-blue);
+    box-shadow: 0 0 20px var(--nebula-blue);
+    transform: scale(1.05);
+}
+
+/* --- Status Message --- */
+#statusMessage {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    font-weight: bold;
+    color: limegreen; /* Green for success/notification */
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- Footer --- */
+footer {
+    margin-top: auto;
+    padding: 15px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+}
