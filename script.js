@@ -162,7 +162,7 @@ saveBtn.addEventListener('click', () => {
     const dataURL = canvas.toDataURL('image/png');
     downloadLink.href = dataURL;
     downloadLink.download = `Drawing_from_My_HG_${new Date().toLocaleDateString()}.png`;
-    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your HB! 💖");
+    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your Best Friend Abdi! 💖");
     downloadLink.click();
 });
 
