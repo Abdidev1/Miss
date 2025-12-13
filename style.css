@@ -157,7 +157,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* --- Canvas Styling --- */
 #drawingCanvas {
-    /* *** FIX IMPLEMENTED HERE: Makes canvas background transparent *** */
+    /* *** FIX: Makes canvas background transparent for invisible erase *** */
     background-color: transparent; 
     border: 5px solid #F542A1; /* Pink Border */
     border-radius: 15px;
