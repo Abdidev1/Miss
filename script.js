@@ -1,98 +1,119 @@
-// 1. PASTE YOUR FIREBASE CONFIGURATION HERE
-// (Go to your Firebase project settings to get these values)
-const firebaseConfig = {
-    apiKey: "AIzaSyCzvU8LaUW70czawkpHZYTa7pTmCnELjh8", // Example: "AIzaSyC0V8B9_wL4p..."
-    authDomain: "miss-c657c.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com", 
-    projectId: "miss-c657c",
-    storageBucket: "miss-c657c.firebasestorage.app",
-    messagingSenderId: "881521432432",
-    appId: "1:881521432432:web:0e15a97d3a1d59370461b5"
-};
+// 1. Get DOM elements and setup Canvas
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+const colorPicker = document.getElementById('colorPicker');
+const brushSize = document.getElementById('brushSize');
+const sizeValueSpan = document.getElementById('sizeValue');
+const eraserBtn = document.getElementById('eraserBtn');
+const clearBtn = document.getElementById('clearBtn');
+const saveBtn = document.getElementById('saveBtn');
+const downloadLink = document.getElementById('downloadLink');
 
-// Initialize Firebase
-if (typeof firebase !== 'undefined') {
-    firebase.initializeApp(firebaseConfig);
-    // Get a reference to the database service
-    const database = firebase.database();
-    // Define the database path where we will store the 'miss you' data
-    const missYouRef = database.ref('miss_you_signal');
+// Set the canvas size
+canvas.width = 800; 
+canvas.height = 500;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const missYouBtn = document.getElementById('missYouBtn');
-        const statusMessage = document.getElementById('statusMessage');
+// Set initial drawing properties
+ctx.lineWidth = brushSize.value;
+ctx.lineCap = 'round';
+ctx.strokeStyle = colorPicker.value;
 
-        // --- BUTTON CLICK HANDLER (Sends Signal) ---
-        missYouBtn.addEventListener('click', function() {
-            // Determine the sender based on context (You can customize this)
-            // For example, if you are hg, set sender = 'hg', and the other person's code uses 'hb'
-            const sender = 'hg'; 
-            
-            const now = new Date();
-            const timestamp = now.getTime();
-            const timeString = now.toLocaleTimeString();
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
 
-            // Set pending state
-            missYouBtn.disabled = true;
-            missYouBtn.textContent = 'Sending Signal... 🛰️';
-            statusMessage.classList.add('hidden');
+// 2. Event Listeners for Controls
+brushSize.addEventListener('input', () => {
+    ctx.lineWidth = brushSize.value;
+    sizeValueSpan.textContent = brushSize.value;
+});
 
-            // 1. Write the new signal data to the Firebase Realtime Database
-            missYouRef.set({
-                sender: sender,
-                timestamp: timestamp,
-                readableTime: timeString,
-                message: `${sender} misses you!`
-            })
-            .then(() => {
-                // Success! Update the local status message
-                statusMessage.innerHTML = `✅ Signal Sent! Your cosmic message was sent at **${timeString}** and saved to the stars!`;
-                statusMessage.classList.remove('hidden');
-            })
-            .catch((error) => {
-                // Error! Update the local status message
-                statusMessage.innerHTML = `❌ Error sending signal: ${error.message}`;
-                statusMessage.classList.remove('hidden');
-            })
-            .finally(() => {
-                 // Reset the button
-                missYouBtn.disabled = false;
-                missYouBtn.textContent = '💫 Send a Star Signal (I Miss You)';
-            });
-        });
-        
-        // --- REAL-TIME LISTENER (Receives Signal) ---
-        // This function is triggered instantly whenever the 'miss_you_signal' data changes in the database.
-        missYouRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                // Check if the signal is very recent (e.g., within the last 5 seconds)
-                const currentTime = new Date().getTime();
-                if (currentTime - data.timestamp < 5000) { 
-                    // Prevent showing a notification if the sender is the current user (optional)
-                    // if (data.sender !== 'hg') { // Uncomment and set your role correctly if you want this filter
-                        
-                    // Remove any existing flash alert before creating a new one
-                    const existingAlert = document.getElementById('flash-alert');
-                    if (existingAlert) existingAlert.remove();
-                    
-                    // Create a temporary, highly visible flash notification element
-                    const flashNotification = document.createElement('div');
-                    flashNotification.id = 'flash-alert';
-                    flashNotification.innerHTML = `<h1>📣 COSMIC ALERT! ${data.sender.toUpperCase()} MISSES YOU!</h1>`;
-                    document.body.appendChild(flashNotification);
+colorPicker.addEventListener('input', () => {
+    ctx.strokeStyle = colorPicker.value;
+});
 
-                    // Remove the flash after 3 seconds
-                    setTimeout(() => {
-                        flashNotification.remove();
-                    }, 3000);
-                    // }
-                }
-            }
-        });
-    });
+eraserBtn.addEventListener('click', () => {
+    // Set color to white (same as background) to simulate erasing
+    ctx.strokeStyle = '#ffffff'; 
+});
 
-} else {
-    // Fallback if Firebase SDK didn't load
-    console.error("Firebase SDK not loaded. Check your index.html script tags.");
+clearBtn.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+saveBtn.addEventListener('click', () => {
+    // Convert the canvas content to a PNG data URL
+    const dataURL = canvas.toDataURL('image/png');
+
+    // Set the link's href to the data URL
+    downloadLink.href = dataURL;
+
+    // Set a file name for the downloaded image
+    downloadLink.download = `Drawing_from_My_HG_${new Date().toLocaleDateString()}.png`;
+    
+    // You can customize the message here!
+    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your HB! 💖");
+    
+    // Simulate a click on the hidden link to trigger the download
+    downloadLink.click();
+});
+
+// Revert back to the color picker's color when she changes color or size
+colorPicker.addEventListener('input', () => {
+    ctx.strokeStyle = colorPicker.value;
+});
+brushSize.addEventListener('input', () => {
+    // Reset to the chosen color in case she was on the eraser
+    ctx.strokeStyle = colorPicker.value;
+});
+
+
+// 3. Drawing Functions
+function draw(e) {
+    if (!isDrawing) return; // Stop the function if they are not moused down
+
+    // Prevent scrolling on mobile devices while drawing
+    e.preventDefault(); 
+    
+    // Get the correct coordinates relative to the canvas
+    const rect = canvas.getBoundingClientRect();
+    let currentX = e.clientX - rect.left;
+    let currentY = e.clientY - rect.top;
+
+    // Start drawing a line
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(currentX, currentY);
+    ctx.stroke();
+
+    // Update the last position
+    [lastX, lastY] = [currentX, currentY];
 }
+
+function startDrawing(e) {
+    isDrawing = true;
+
+    // Get the correct coordinates relative to the canvas
+    const rect = canvas.getBoundingClientRect();
+    let startX = e.clientX - rect.left;
+    let startY = e.clientY - rect.top;
+
+    // Set initial position
+    [lastX, lastY] = [startX, startY];
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+// 4. Mouse and Touch Event Listeners
+// Mouse events
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing); // Stop drawing if mouse leaves the canvas
+
+// Touch events (for mobile/tablet use)
+canvas.addEventListener('touchstart', (e) => startDrawing(e.touches[0]));
+canvas.addEventListener('touchmove', (e) => draw(e.touches[0]));
+canvas.addEventListener('touchend', stopDrawing);
