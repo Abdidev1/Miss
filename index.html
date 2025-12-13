@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Connection | [Your Names/Initials]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <title>💕 Drawing Canvas for My Love 💕</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <h1>🎀 Draw Something Beautiful for Me 🎀</h1>
+        
+        <div class="controls-panel">
+            <div class="control-group">
+                <label for="colorPicker">Color:</label>
+                <input type="color" id="colorPicker" value="#F542A1"> </div>
+            
+            <div class="control-group">
+                <label for="brushSize">Size:</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5">
+                <span id="sizeValue">5</span>px
+            </div>
+            
+            <div class="control-group">
+                <button id="eraserBtn" class="control-btn">🧹 Eraser</button>
+                <button id="clearBtn" class="control-btn">✨ Clear All</button>
+                <button id="saveBtn" class="control-btn primary-btn">💌 Send to HB</button>
+            </div>
+        </div>
+        
+        <canvas id="drawingCanvas"></canvas>
+        
+        <a id="downloadLink" style="display: none;"></a>
+    </div>
 
-    <div id="star-bg"></div> 
-    
-    <header>
-        <h1>A Cosmic Connection</h1>
-        <p>You are two stars, forever linked across the void.</p>
-    </header>
-
-    <main class="container">
-        <section id="shared-space">
-            <h2>Our Shared Orbit</h2>
-            <p>This space updates in real-time. When the other person clicks the button, a notification will flash here!</p>
-            </section>
-
-        <section id="miss-you-section">
-            <p>Feeling the distance? Let them know.</p>
-            <button id="missYouBtn" class="glow-on-hover">
-                💫 Send a Star Signal (I Miss You)
-            </button>
-            <div id="statusMessage" class="hidden"></div>
-        </section>
-    </main>
-
-    <footer>
-        <p>Made with love by [Your Name] | Est. 2025</p>
-    </footer>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
     <script src="script.js"></script>
 </body>
 </html>
