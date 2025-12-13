@@ -94,23 +94,44 @@ input[type="range"]::-webkit-slider-thumb {
     transition: background-color 0.2s, transform 0.1s;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    /* Base style for tool buttons */
+    background-color: #E0BBE4; 
+    color: #6C5B7B;
 }
 
 .control-btn:hover {
     transform: translateY(-1px);
 }
 
-#eraserBtn {
-    background-color: #FFECB3; /* Light Yellow */
-    color: #5D4037; /* Brownish */
+/* Style for the currently active tool button */
+.active-tool {
+    background-color: #F542A1 !important; /* Bright Pink when active */
+    color: white !important;
+    box-shadow: 0 0 0 3px #E0BBE4;
 }
 
-#clearBtn {
+/* Specific button styles (optional) */
+#pencilBtn {
     background-color: #ADD8E6; /* Light Blue */
     color: #1565C0;
 }
 
-.primary-btn { /* 'Send to HB' button */
+#markerBtn {
+    background-color: #FFECB3; /* Light Yellow */
+    color: #5D4037; /* Brownish */
+}
+
+#eraserBtn {
+    background-color: #FFC1E3; /* Light Pink */
+    color: #6C5B7B;
+}
+
+#clearBtn {
+    background-color: #ADD8E6; /* Light Blue (kept for clear) */
+    color: #1565C0;
+}
+
+.primary-btn { /* 'Download' button */
     background-color: #F542A1;
     color: white;
 }
@@ -128,7 +149,7 @@ input[type="range"]::-webkit-slider-thumb {
     display: block; /* Important for canvas */
     margin: 0 auto;
     /* This makes the canvas responsive up to 800px wide */
-    width: 100%; 
+    width: 100%; 
     max-width: 800px;
     height: 500px; /* Fixed height */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
