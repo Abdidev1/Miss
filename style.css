@@ -34,7 +34,7 @@ h1 {
 .controls-panel {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px; /* Slightly reduced gap */
     flex-wrap: wrap;
     margin-bottom: 20px;
     padding: 15px;
@@ -47,6 +47,14 @@ h1 {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+/* Style for the dedicated tool selection menu */
+.tool-menu {
+    border: 2px solid #E0BBE4;
+    padding: 8px 15px;
+    border-radius: 10px;
+    gap: 8px;
 }
 
 label {
@@ -86,7 +94,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* --- Buttons --- */
 .control-btn {
-    padding: 10px 15px;
+    padding: 10px 12px; /* Slightly adjusted padding for tool buttons */
     border: none;
     border-radius: 8px;
     font-weight: 700;
@@ -110,24 +118,31 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 0 0 3px #E0BBE4;
 }
 
-/* Specific button styles (optional) */
+/* Specific tool button colors */
 #pencilBtn {
-    background-color: #ADD8E6; /* Light Blue */
+    background-color: #ADD8E6; 
     color: #1565C0;
 }
-
+#penBtn {
+    background-color: #C3B1E1; /* Muted Lavender */
+    color: #3C2A53;
+}
 #markerBtn {
-    background-color: #FFECB3; /* Light Yellow */
-    color: #5D4037; /* Brownish */
+    background-color: #FFECB3; 
+    color: #5D4037; 
+}
+#crayonBtn {
+    background-color: #FFE0E0; /* Lightest Pink */
+    color: #F542A1;
 }
 
 #eraserBtn {
-    background-color: #FFC1E3; /* Light Pink */
+    background-color: #FFC1E3; 
     color: #6C5B7B;
 }
 
 #clearBtn {
-    background-color: #ADD8E6; /* Light Blue (kept for clear) */
+    background-color: #ADD8E6; 
     color: #1565C0;
 }
 
@@ -137,20 +152,20 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .primary-btn:hover {
-    background-color: #D6378A; /* Darker Pink */
+    background-color: #D6378A; 
 }
 
 /* --- Canvas Styling --- */
 #drawingCanvas {
-    background-color: #ffffff;
+    /* *** FIX IMPLEMENTED HERE: Makes canvas background transparent *** */
+    background-color: transparent; 
     border: 5px solid #F542A1; /* Pink Border */
     border-radius: 15px;
     cursor: crosshair;
-    display: block; /* Important for canvas */
+    display: block; 
     margin: 0 auto;
-    /* This makes the canvas responsive up to 800px wide */
     width: 100%; 
     max-width: 800px;
-    height: 500px; /* Fixed height */
+    height: 500px; 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
