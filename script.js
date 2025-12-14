@@ -162,30 +162,52 @@ saveBtn.addEventListener('click', () => {
     const dataURL = canvas.toDataURL('image/png');
     downloadLink.href = dataURL;
     downloadLink.download = `Drawing_from_My_HG_${new Date().toLocaleDateString()}.png`;
-    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your Best Friend Abdi! 💖");
+    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your HB! 💖");
     downloadLink.click();
 });
 
 
-// 3. Drawing Functions (Unchanged)
+// 3. Drawing Functions
 function draw(e) {
     if (!isDrawing) return; 
-    e.preventDefault(); 
+    
+    // *** MOBILE FIX: Prevent scrolling and use touch point ***
+    if (e.touches && e.touches.length === 1) {
+        e.preventDefault(); 
+        e = e.touches[0]; // Use the single touch point
+    } else if (e.touches) {
+        // If multitouch, stop drawing
+        isDrawing = false;
+        return;
+    }
+    // *** END MOBILE FIX ***
+
     const rect = canvas.getBoundingClientRect();
     let currentX = e.clientX - rect.left;
     let currentY = e.clientY - rect.top;
+    
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
+    
     [lastX, lastY] = [currentX, currentY];
 }
 
 function startDrawing(e) {
     isDrawing = true;
+
+    // *** MOBILE FIX: Prevent Default scrolling/zooming immediately on touch start ***
+    if (e.touches) {
+        e.preventDefault();
+        e = e.touches[0]; // Use the first touch point
+    }
+    // *** END MOBILE FIX ***
+
     const rect = canvas.getBoundingClientRect();
     let startX = e.clientX - rect.left;
     let startY = e.clientY - rect.top;
+    
     [lastX, lastY] = [startX, startY];
 }
 
@@ -193,13 +215,16 @@ function stopDrawing() {
     isDrawing = false;
 }
 
-// 4. Mouse and Touch Event Listeners (Unchanged)
+// 4. Mouse and Touch Event Listeners (Simplified and corrected)
+// Mouse events (for desktop)
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing); 
-canvas.addEventListener('touchstart', (e) => startDrawing(e.touches[0]));
-canvas.addEventListener('touchmove', (e) => draw(e.touches[0]));
+
+// Touch events (for mobile/tablet use)
+canvas.addEventListener('touchstart', startDrawing);
+canvas.addEventListener('touchmove', draw);
 canvas.addEventListener('touchend', stopDrawing);
 
 // Set initial active tool on load
