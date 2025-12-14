@@ -16,7 +16,7 @@ const clearBtn = document.getElementById('clearBtn');
 const saveBtn = document.getElementById('saveBtn');
 const downloadLink = document.getElementById('downloadLink');
 
-// Set the canvas size
+// Set the canvas size (Internal resolution)
 canvas.width = 800; 
 canvas.height = 500;
 
@@ -170,44 +170,56 @@ saveBtn.addEventListener('click', () => {
 // 3. Drawing Functions
 function draw(e) {
     if (!isDrawing) return; 
-    
-    // *** MOBILE FIX: Prevent scrolling and use touch point ***
+
+    // Get touch point for mobile
     if (e.touches && e.touches.length === 1) {
         e.preventDefault(); 
-        e = e.touches[0]; // Use the single touch point
+        e = e.touches[0]; 
     } else if (e.touches) {
-        // If multitouch, stop drawing
         isDrawing = false;
         return;
     }
-    // *** END MOBILE FIX ***
-
+    
+    // *** COORDINATE FIX: Calculate true coordinates based on canvas scaling ***
     const rect = canvas.getBoundingClientRect();
-    let currentX = e.clientX - rect.left;
-    let currentY = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    // Calculate the corrected coordinates
+    let currentX = (e.clientX - rect.left) * scaleX; 
+    let currentY = (e.clientY - rect.top) * scaleY; 
+    // *** END COORDINATE FIX ***
+
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
     
+    // Update the last position using corrected coordinates
     [lastX, lastY] = [currentX, currentY];
 }
 
 function startDrawing(e) {
     isDrawing = true;
-
-    // *** MOBILE FIX: Prevent Default scrolling/zooming immediately on touch start ***
+    
+    // Get touch point for mobile and prevent scrolling
     if (e.touches) {
         e.preventDefault();
-        e = e.touches[0]; // Use the first touch point
+        e = e.touches[0]; 
     }
-    // *** END MOBILE FIX ***
 
+    // *** COORDINATE FIX: Calculate true coordinates based on canvas scaling ***
     const rect = canvas.getBoundingClientRect();
-    let startX = e.clientX - rect.left;
-    let startY = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    // Calculate the corrected start position
+    let startX = (e.clientX - rect.left) * scaleX; 
+    let startY = (e.clientY - rect.top) * scaleY; 
+    // *** END COORDINATE FIX ***
     
+    // Set initial position using corrected coordinates
     [lastX, lastY] = [startX, startY];
 }
 
@@ -215,7 +227,7 @@ function stopDrawing() {
     isDrawing = false;
 }
 
-// 4. Mouse and Touch Event Listeners (Simplified and corrected)
+// 4. Mouse and Touch Event Listeners 
 // Mouse events (for desktop)
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
