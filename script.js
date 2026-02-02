@@ -5,6 +5,11 @@ const colorPicker = document.getElementById('colorPicker');
 const brushSize = document.getElementById('brushSize');
 const sizeValueSpan = document.getElementById('sizeValue');
 
+// Set default picker to a cool purple/indigo if it's currently pink
+if (colorPicker.value === '#F542A1' || colorPicker.value === '#ffc1e3') {
+    colorPicker.value = '#764ba2'; 
+}
+
 // Get all drawing tool buttons
 const pencilBtn = document.getElementById('pencilBtn'); 
 const penBtn = document.getElementById('penBtn'); 
@@ -17,7 +22,7 @@ const saveBtn = document.getElementById('saveBtn');
 const downloadLink = document.getElementById('downloadLink');
 
 // Set the canvas size (Internal resolution)
-canvas.width = 800; 
+canvas.width = 800; 
 canvas.height = 500;
 
 // Set initial drawing properties
@@ -34,14 +39,20 @@ let currentTool = 'pencil';
 
 // --- Helper Function to manage active button state ---
 function setActiveTool(tool) {
-    document.querySelectorAll('.tool-btn').forEach(btn => {
+    // Note: ensure your HTML buttons have the class 'control-btn' or 'tool-btn'
+    document.querySelectorAll('.control-btn').forEach(btn => {
         btn.classList.remove('active-tool');
     });
-    if (tool === 'pencil') pencilBtn.classList.add('active-tool');
-    if (tool === 'pen') penBtn.classList.add('active-tool');
-    if (tool === 'marker') markerBtn.classList.add('active-tool');
-    if (tool === 'crayon') crayonBtn.classList.add('active-tool');
-    if (tool === 'eraser') eraserBtn.classList.add('active-tool');
+    
+    const toolMap = {
+        'pencil': pencilBtn,
+        'pen': penBtn,
+        'marker': markerBtn,
+        'crayon': crayonBtn,
+        'eraser': eraserBtn
+    };
+
+    if (toolMap[tool]) toolMap[tool].classList.add('active-tool');
 }
 
 // Function to convert hex to RGBA with specific opacity (for Marker)
@@ -53,7 +64,6 @@ function hexToRgba(hex, alpha) {
 }
 
 // --- Tool Property Functions ---
-
 function setPencilProperties() {
     ctx.globalCompositeOperation = 'source-over'; 
     ctx.lineCap = 'round';
@@ -65,8 +75,8 @@ function setPencilProperties() {
 
 function setPenProperties() {
     ctx.globalCompositeOperation = 'source-over'; 
-    ctx.lineCap = 'butt'; // Gives a slightly sharper pen stroke
-    ctx.lineJoin = 'miter'; // Gives a sharp corner
+    ctx.lineCap = 'butt'; 
+    ctx.lineJoin = 'miter'; 
     ctx.strokeStyle = colorPicker.value;
     currentTool = 'pen';
     setActiveTool('pen');
@@ -74,16 +84,14 @@ function setPenProperties() {
 
 function setMarkerProperties() {
     ctx.globalCompositeOperation = 'source-over';
-    ctx.lineCap = 'square'; // Marker often has a square tip
-    ctx.lineJoin = 'bevel'; // Smoother corner blending
-    // Use an RGBA color with low opacity (e.g., 0.3) for a marker feel
+    ctx.lineCap = 'square'; 
+    ctx.lineJoin = 'bevel'; 
     ctx.strokeStyle = hexToRgba(colorPicker.value, 0.3);
     currentTool = 'marker';
     setActiveTool('marker');
 }
 
 function setCrayonProperties() {
-    // 'multiply' darkens overlapping strokes, simulating crayon wax build-up
     ctx.globalCompositeOperation = 'multiply';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -93,7 +101,6 @@ function setCrayonProperties() {
 }
 
 function setEraserProperties() {
-    // 'destination-out' creates transparency
     ctx.globalCompositeOperation = 'destination-out';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -101,126 +108,93 @@ function setEraserProperties() {
     setActiveTool('eraser');
 }
 
-
 // 2. Event Listeners for Controls
-
-// --- COLOR PICKER ---
 colorPicker.addEventListener('input', () => {
-    // When color changes, re-apply the properties for the current drawing tool
-    if (currentTool === 'marker') {
-        setMarkerProperties(); 
-    } else if (currentTool === 'pencil') {
-        setPencilProperties();
-    } else if (currentTool === 'pen') {
-        setPenProperties();
-    } else if (currentTool === 'crayon') {
-        setCrayonProperties();
-    } else {
-        // If eraser was selected, switch back to pencil
-        setPencilProperties();
-    }
+    const toolActions = {
+        'marker': setMarkerProperties,
+        'pencil': setPencilProperties,
+        'pen': setPenProperties,
+        'crayon': setCrayonProperties
+    };
+    (toolActions[currentTool] || setPencilProperties)();
 });
 
-// --- BRUSH SIZE SLIDER ---
 brushSize.addEventListener('input', () => {
     ctx.lineWidth = brushSize.value;
     sizeValueSpan.textContent = brushSize.value;
     
-    // Re-apply tool properties to maintain stroke style (e.g., RGBA or composite mode)
-    if (currentTool === 'marker') {
-        setMarkerProperties(); 
-    } else if (currentTool === 'crayon') {
-        setCrayonProperties(); 
-    } else if (currentTool === 'pencil') {
-        setPencilProperties();
-    } else if (currentTool === 'pen') {
-        setPenProperties();
-    } else if (currentTool === 'eraser') {
-        setEraserProperties();
-    }
+    const toolActions = {
+        'marker': setMarkerProperties,
+        'crayon': setCrayonProperties,
+        'pencil': setPencilProperties,
+        'pen': setPenProperties,
+        'eraser': setEraserProperties
+    };
+    if (toolActions[currentTool]) toolActions[currentTool]();
 });
 
-
-// --- TOOL BUTTON LISTENERS ---
 pencilBtn.addEventListener('click', setPencilProperties);
 penBtn.addEventListener('click', setPenProperties);
 markerBtn.addEventListener('click', setMarkerProperties);
 crayonBtn.addEventListener('click', setCrayonProperties);
 eraserBtn.addEventListener('click', setEraserProperties);
 
-
-// --- CLEAR ALL ---
 clearBtn.addEventListener('click', () => {
     ctx.globalCompositeOperation = 'source-over'; 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Revert to Pencil tool after clearing
     setPencilProperties();
 });
 
-// --- DOWNLOAD BUTTON ---
 saveBtn.addEventListener('click', () => {
     const dataURL = canvas.toDataURL('image/png');
     downloadLink.href = dataURL;
-    downloadLink.download = `Drawing_from_My_HG_${new Date().toLocaleDateString()}.png`;
-    alert("💖 Your drawing has been saved! You can now send the downloaded image (Drawing_from_My_HG...) to your HB! 💖");
+    downloadLink.download = `Sketch_${new Date().getTime()}.png`;
+    // Removed the "HB/HG" pink message for something cleaner
+    alert("✨ Sketch saved successfully!");
     downloadLink.click();
 });
 
-
 // 3. Drawing Functions
-function draw(e) {
-    if (!isDrawing) return; 
-
-    // Get touch point for mobile
-    if (e.touches && e.touches.length === 1) {
-        e.preventDefault(); 
-        e = e.touches[0]; 
-    } else if (e.touches) {
-        isDrawing = false;
-        return;
-    }
-    
-    // *** COORDINATE FIX: Calculate true coordinates based on canvas scaling ***
+function getCoordinates(e) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
+    
+    let clientX, clientY;
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
 
-    // Calculate the corrected coordinates
-    let currentX = (e.clientX - rect.left) * scaleX; 
-    let currentY = (e.clientY - rect.top) * scaleY; 
-    // *** END COORDINATE FIX ***
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
 
+function draw(e) {
+    if (!isDrawing) return; 
+    if (e.touches && e.touches.length > 1) return;
+    if (e.touches) e.preventDefault();
+
+    const coords = getCoordinates(e);
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
-    ctx.lineTo(currentX, currentY);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
     
-    // Update the last position using corrected coordinates
-    [lastX, lastY] = [currentX, currentY];
+    [lastX, lastY] = [coords.x, coords.y];
 }
 
 function startDrawing(e) {
     isDrawing = true;
-    
-    // Get touch point for mobile and prevent scrolling
-    if (e.touches) {
-        e.preventDefault();
-        e = e.touches[0]; 
-    }
-
-    // *** COORDINATE FIX: Calculate true coordinates based on canvas scaling ***
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    // Calculate the corrected start position
-    let startX = (e.clientX - rect.left) * scaleX; 
-    let startY = (e.clientY - rect.top) * scaleY; 
-    // *** END COORDINATE FIX ***
-    
-    // Set initial position using corrected coordinates
-    [lastX, lastY] = [startX, startY];
+    if (e.touches) e.preventDefault();
+    const coords = getCoordinates(e);
+    [lastX, lastY] = [coords.x, coords.y];
 }
 
 function stopDrawing() {
@@ -228,15 +202,13 @@ function stopDrawing() {
 }
 
 // 4. Mouse and Touch Event Listeners 
-// Mouse events (for desktop)
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing); 
 
-// Touch events (for mobile/tablet use)
-canvas.addEventListener('touchstart', startDrawing);
-canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('touchstart', startDrawing, {passive: false});
+canvas.addEventListener('touchmove', draw, {passive: false});
 canvas.addEventListener('touchend', stopDrawing);
 
 // Set initial active tool on load
